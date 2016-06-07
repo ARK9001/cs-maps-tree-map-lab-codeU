@@ -73,6 +73,21 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		
 		// the actual search
         // TODO: Fill this in.
+		Node n = root;
+
+		while (n != null) {
+			int val = k.compareTo(n.key);
+
+			if (val == 0){
+				return n;
+			}
+			else if (val < 0) {
+				n = n.left;
+			}
+			else {
+				n = n.right;
+			}
+		}
         return null;
 	}
 
@@ -92,7 +107,19 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(Object target) {
-		return false;
+		//return false;
+		return cVHelper(target, root);
+		
+	}
+
+	private boolean cVHelper(Object target, Node n){
+		if (n == null) {
+			return false;
+		}
+		if (equals(target, n.value) || cVHelper(target, n.right) || cVHelper(target, n.left)){
+			return true;
+		}
+		return false; 
 	}
 
 	@Override
@@ -118,7 +145,19 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
         // TODO: Fill this in.
+        keySetHelper(root, set);
 		return set;
+	}
+
+	public void keySetHelper(Node n, Set<K> k){
+		if (n == null){
+			return;
+		}
+		else{
+			keySetHelper(n.right, k);
+			k.add(n.key);
+			keySetHelper(n.left, k);
+		}
 	}
 
 	@Override
@@ -136,7 +175,40 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	private V putHelper(Node node, K key, V value) {
         // TODO: Fill this in.
-        return null;
+        
+        Comparable<? super K> k = (Comparable<? super K>) key;
+        int v = k.compareTo(node.key);
+
+		if (v == 0){
+			V prev = node.value;
+			node.value = value;
+			return prev;
+		}
+
+		else if (v < 0) {
+
+			if (node.left != null) {
+				return putHelper(node.left, key, value);
+			}
+			else {
+				node.left = new Node(key, value);
+				size++;
+				return null;
+			}
+
+		}
+		else {
+			
+			if (node.right != null) {
+				return putHelper(node.right, key, value);
+			}
+			else {
+				node.right = new Node(key, value);
+				size++;
+				return null;
+			}
+
+		}
 	}
 
 	@Override
